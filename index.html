@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f0f0d" />
+  <meta name="description" content="Меню кафе Парку Історії Землі" />
   <title>Меню — Парк Історії Землі</title>
+
+  <link rel="preconnect" href="https://docs.google.com" />
+  <link rel="preconnect" href="https://drive.google.com" />
 
   <style>
     :root {
       --bg: #0f0f0d;
-      --wood-1: #171411;
-      --wood-2: #201b16;
-      --panel: rgba(18, 18, 16, 0.24);
+      --panel: rgba(18, 18, 16, 0.42);
       --text: #f7f3ea;
       --muted: #b9b1a4;
       --accent: #f2a300;
       --accent-2: #ffc44a;
       --line: rgba(242, 163, 0, 0.26);
-      --radius: 24px;
-      --shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+      --shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
       --max: 620px;
       --page-bg-image: none;
     }
@@ -27,6 +29,7 @@
     html {
       scroll-behavior: smooth;
       background: var(--bg);
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -35,9 +38,10 @@
       color: var(--text);
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* СТАТИЧНИЙ ФОН ІЗ ЧОРНИМ ЗАТЕМНЕННЯМ 20% */
+    /* Статичний фон із затемненням */
     .main-bg {
       position: fixed;
       inset: 0;
@@ -50,13 +54,15 @@
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
-    }
-
-    body::before {
-      content: none;
+      transition: opacity .5s ease;
     }
 
     button { font: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 3px;
+    }
 
     .page {
       width: min(var(--max), calc(100% - 18px));
@@ -64,6 +70,7 @@
       padding: 10px 0 calc(72px + env(safe-area-inset-bottom));
     }
 
+    /* ---------- HERO ---------- */
     .hero {
       position: relative;
       overflow: hidden;
@@ -72,13 +79,11 @@
       background:
         radial-gradient(circle at 12% 0%, rgba(242,163,0,.12), transparent 34%),
         linear-gradient(180deg, rgba(255,255,255,.045), rgba(0,0,0,.08)),
-        rgba(12,12,11,.24);
+        rgba(12,12,11,.32);
       border: 1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
       text-align: center;
     }
-
-    .hero::before { display: none; }
 
     .hero-kicker {
       margin: 0 0 6px;
@@ -86,18 +91,18 @@
       font-size: 11px;
       line-height: 1.1;
       letter-spacing: .24em;
+      padding-left: .24em; /* компенсація letter-spacing для точного центрування */
       text-transform: uppercase;
       font-weight: 800;
     }
 
     .hero-title {
-      position: relative;
-      z-index: 1;
       margin: 0;
       font-size: clamp(42px, 14vw, 74px);
       line-height: .9;
       font-weight: 900;
       letter-spacing: .09em;
+      padding-left: .09em;
       text-transform: uppercase;
     }
 
@@ -109,14 +114,17 @@
       line-height: 1.45;
     }
 
+    /* ---------- ПАНЕЛЬ КАТЕГОРІЙ ---------- */
     .toolbar-wrap {
       position: sticky;
       top: 0;
       z-index: 20;
       margin: 10px -9px 0;
       padding: 10px 9px 9px;
-      background: linear-gradient(180deg, rgba(12,12,11,.46), rgba(12,12,11,.22));
+      padding-top: max(10px, env(safe-area-inset-top));
+      background: linear-gradient(180deg, rgba(12,12,11,.62), rgba(12,12,11,.34));
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid rgba(255,255,255,.045);
     }
 
@@ -126,6 +134,12 @@
       gap: 7px;
       align-items: center;
     }
+
+    .category-scroll.no-overflow {
+      grid-template-columns: 1fr;
+    }
+
+    .category-scroll.no-overflow .scroll-btn { display: none; }
 
     .scroll-btn {
       width: 34px;
@@ -139,6 +153,12 @@
       line-height: 1;
       display: grid;
       place-items: center;
+      transition: opacity .2s ease;
+    }
+
+    .scroll-btn:disabled {
+      opacity: .3;
+      cursor: default;
     }
 
     .tabs {
@@ -167,6 +187,7 @@
       line-height: 1.15;
       white-space: nowrap;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      transition: background .2s ease, color .2s ease, border-color .2s ease;
     }
 
     .tab.active {
@@ -176,6 +197,14 @@
       font-weight: 800;
     }
 
+    .tab-count {
+      margin-left: 5px;
+      opacity: .6;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ---------- СТАТУС ---------- */
     .status {
       display: flex;
       justify-content: space-between;
@@ -185,20 +214,20 @@
       font-size: 12px;
       line-height: 1.35;
       margin: 12px 2px 2px;
+      min-height: 16px;
     }
 
     .status strong { color: var(--text); }
 
+    .status .offline { color: var(--accent-2); }
+
+    /* ---------- КАТЕГОРІЇ ТА КАРТКИ ---------- */
     .category {
       margin-top: 26px;
       scroll-margin-top: 94px;
     }
 
     .category-head {
-      display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
-      gap: 10px;
       padding: 0 2px 10px;
       margin-bottom: 12px;
       border-bottom: 1px solid var(--line);
@@ -212,6 +241,7 @@
       text-transform: uppercase;
       letter-spacing: .055em;
       font-weight: 900;
+      overflow-wrap: anywhere;
     }
 
     .grid {
@@ -222,13 +252,10 @@
 
     .item {
       --inner-width: 80%;
-      position: relative;
       display: grid;
       grid-template-columns: 1fr;
       gap: 17px;
-      align-items: start;
       justify-items: center;
-      min-height: auto;
       padding: 30px 22px 42px;
       border-radius: 30px;
       border: 1px solid rgba(255,255,255,.12);
@@ -237,14 +264,13 @@
         linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.008) 42%),
         var(--panel);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(1.5px);
-      -webkit-backdrop-filter: blur(1.5px);
+      /* без backdrop-filter на кожній картці — так прокрутка плавніша на телефонах */
+      content-visibility: auto;
+      contain-intrinsic-size: auto 560px;
     }
 
     .item.no-photo {
-      grid-template-columns: 1fr;
-      min-height: auto;
-      padding: 30px 22px 42px;
+      contain-intrinsic-size: auto 200px;
     }
 
     .top-mark {
@@ -252,15 +278,12 @@
       min-height: 24px;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      justify-self: center;
       margin: 0 0 2px;
     }
 
     .dots {
       display: flex;
       gap: 4px;
-      margin: 0;
     }
 
     .dots i {
@@ -274,7 +297,6 @@
     .badge {
       display: inline-flex;
       align-items: center;
-      width: fit-content;
       min-height: 24px;
       border-radius: 999px;
       background: var(--accent);
@@ -289,27 +311,31 @@
     }
 
     .photo-wrap {
+      position: relative;
       width: var(--inner-width);
       aspect-ratio: 1 / 1;
-      height: auto;
       border-radius: 50%;
       overflow: hidden;
       border: 3px solid var(--accent);
-      background:
-        radial-gradient(circle at 30% 25%, #5b5b5b, #2b2b2b 60%, #151515 100%);
+      background: radial-gradient(circle at 30% 25%, #5b5b5b, #2b2b2b 60%, #151515 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
       box-shadow: 0 10px 28px rgba(0,0,0,.42);
     }
 
     .photo-wrap img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      opacity: 0;
+      transition: opacity .35s ease;
     }
+
+    .photo-wrap img.loaded { opacity: 1; }
 
     .photo-placeholder {
       color: rgba(255,255,255,.78);
@@ -322,15 +348,6 @@
     .item-content {
       width: var(--inner-width);
       min-width: 0;
-      max-width: none;
-      padding-right: 0;
-      justify-self: center;
-    }
-
-    .item.no-photo .item-content {
-      width: var(--inner-width);
-      max-width: none;
-      padding-right: 0;
     }
 
     .item-title {
@@ -339,15 +356,18 @@
       line-height: 1.2;
       font-weight: 850;
       letter-spacing: .01em;
+      overflow-wrap: anywhere;
     }
 
     .item-desc {
-      max-width: 100%;
       margin: 8px 0 14px;
       color: #d8d2c8;
       font-size: 13px;
       line-height: 1.55;
+      white-space: pre-line; /* переноси рядків із таблиці зберігаються */
     }
+
+    .item-title + .meta { margin-top: 12px; }
 
     .meta {
       display: flex;
@@ -369,8 +389,37 @@
       line-height: 1.05;
       font-weight: 900;
       white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
+    /* ---------- СКЕЛЕТ ЗАВАНТАЖЕННЯ ---------- */
+    .skeleton {
+      pointer-events: none;
+    }
+
+    .sk {
+      background: linear-gradient(90deg, rgba(255,255,255,.06) 25%, rgba(255,255,255,.13) 50%, rgba(255,255,255,.06) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 10px;
+    }
+
+    .sk-circle {
+      width: var(--inner-width);
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+    }
+
+    .sk-line { height: 14px; margin-top: 10px; }
+    .sk-line.title { height: 22px; width: 60%; margin-top: 0; }
+    .sk-line.short { width: 35%; height: 20px; margin-top: 16px; }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
+    /* ---------- ПОМИЛКИ / ПУСТО ---------- */
     .empty,
     .error-box {
       margin-top: 16px;
@@ -378,13 +427,25 @@
       border-radius: 22px;
       text-align: center;
       color: var(--muted);
-      background: rgba(0,0,0,.28);
+      background: rgba(0,0,0,.36);
       border: 1px dashed rgba(255,255,255,.16);
       line-height: 1.45;
     }
 
     .error-box strong { color: var(--accent); }
 
+    .retry-btn {
+      margin-top: 14px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #17130a;
+      padding: 10px 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* ---------- КНОПКА НАГОРУ ---------- */
     .top-btn {
       position: fixed;
       right: 14px;
@@ -398,47 +459,24 @@
       color: #17130a;
       font-size: 21px;
       cursor: pointer;
-      display: none;
       box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
     }
 
-    .top-btn.visible { display: block; }
+    .top-btn.visible {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
 
     @media (max-width: 430px) {
-      :root {
-        --panel: rgba(18, 18, 16, 0.16);
-      }
-
-      .hero {
-        background:
-          radial-gradient(circle at 12% 0%, rgba(242,163,0,.10), transparent 34%),
-          linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.06)),
-          rgba(12,12,11,.18);
-      }
-
-      .toolbar-wrap {
-        background: linear-gradient(180deg, rgba(12,12,11,.38), rgba(12,12,11,.16));
-      }
-
-      .item {
-        border: 1px solid rgba(255,255,255,.10);
-        background:
-          radial-gradient(circle at 100% 0%, rgba(242,163,0,.035), transparent 28%),
-          linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.006) 42%),
-          var(--panel);
-        backdrop-filter: blur(1px);
-        -webkit-backdrop-filter: blur(1px);
-      }
-
       .page { width: min(100% - 14px, var(--max)); }
 
       .item {
-        --inner-width: 80%;
         gap: 16px;
-        padding: 30px 20px 42px;
-      }
-
-      .item.no-photo {
         padding: 30px 20px 42px;
       }
     }
@@ -448,10 +486,17 @@
       .item-desc { font-size: 12.5px; line-height: 1.5; }
       .price { font-size: 20px; }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      html, .tabs { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- НОВИЙ ЕЛЕМЕНТ ФОНУ -->
   <div class="main-bg"></div>
 
   <main class="page">
@@ -461,15 +506,15 @@
       <p class="hero-note">Оберіть категорію та перегляньте актуальні позиції</p>
     </section>
 
-    <div class="toolbar-wrap">
-      <div class="category-scroll">
+    <div class="toolbar-wrap" id="toolbar">
+      <div class="category-scroll" id="categoryScroll">
         <button class="scroll-btn" id="catLeft" type="button" aria-label="Категорії вліво">‹</button>
         <nav class="tabs" id="tabs" aria-label="Категорії меню"></nav>
         <button class="scroll-btn" id="catRight" type="button" aria-label="Категорії вправо">›</button>
       </div>
     </div>
 
-    <div class="status" id="status">
+    <div class="status" id="status" aria-live="polite">
       <span>Завантаження меню...</span>
     </div>
 
@@ -479,6 +524,7 @@
   <button class="top-btn" id="topBtn" type="button" aria-label="Нагору">↑</button>
 
   <script>
+    /* ================= НАЛАШТУВАННЯ ================= */
     const SHEET_ID = "1GZerl_j73IJE7HO3VSS1w3PXCdqSjvjRkjtlyrNdJ0Q";
     const SHEET_GID = "0";
     const NO_PHOTO_CATEGORIES = ["міцний алкоголь", "міцні напої"];
@@ -486,12 +532,23 @@
     const PHOTO_VISIBILITY_COLUMN = "Показувати фото";
     const PAGE_BACKGROUND_COLUMN = "Фон сторінки";
 
+    const CACHE_KEY = "earth-park-menu-v1";
+    const AUTO_REFRESH_MS = 5 * 60 * 1000; // оновити, якщо гість повернувся на сторінку через 5+ хв
+    const REQUEST_TIMEOUT_MS = 12000;
+
+    // Одні й ті самі "вимикальні" значення для всіх колонок
+    const FALSE_VALUES = ["ні", "нет", "no", "false", "0", "hidden", "inactive", "вимкнено", "off", "приховати", "-"];
+    const TRUE_VALUES = ["так", "yes", "1", "true", "+"];
+
+    /* ================= СТАН ================= */
     const state = {
       items: [],
       filtered: [],
       categories: [],
       activeCategory: "Усе",
-      updatedAt: null
+      updatedAt: null,
+      fromCache: false,
+      loading: false
     };
 
     const els = {
@@ -500,9 +557,12 @@
       status: document.getElementById("status"),
       topBtn: document.getElementById("topBtn"),
       catLeft: document.getElementById("catLeft"),
-      catRight: document.getElementById("catRight")
+      catRight: document.getElementById("catRight"),
+      categoryScroll: document.getElementById("categoryScroll"),
+      toolbar: document.getElementById("toolbar")
     };
 
+    /* ================= ЗАВАНТАЖЕННЯ ТАБЛИЦІ ================= */
     function loadGoogleSheet() {
       return new Promise((resolve, reject) => {
         const previousGoogle = window.google;
@@ -510,7 +570,7 @@
         const timeout = window.setTimeout(() => {
           cleanup();
           reject(new Error("Google Sheets довго не відповідає"));
-        }, 12000);
+        }, REQUEST_TIMEOUT_MS);
 
         function cleanup() {
           window.clearTimeout(timeout);
@@ -551,13 +611,32 @@
       return table.rows.map(row => {
         const object = {};
         headers.forEach((header, index) => {
-          const cell = row.c[index];
+          const cell = row.c ? row.c[index] : null;
           object[header] = cell ? (cell.f ?? cell.v ?? "") : "";
         });
         return object;
       });
     }
 
+    /* ================= КЕШ (меню відкривається миттєво і без інтернету) ================= */
+    function readCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed?.rows) ? parsed : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function writeCache(rows) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ rows, savedAt: Date.now() }));
+      } catch (e) { /* сховище недоступне — не страшно */ }
+    }
+
+    /* ================= ОБРОБКА РЯДКІВ ================= */
     function getValue(row, names) {
       for (const name of names) {
         if (Object.prototype.hasOwnProperty.call(row, name)) {
@@ -567,38 +646,41 @@
       return "";
     }
 
+    function isFalse(value) {
+      return FALSE_VALUES.includes(String(value || "").trim().toLowerCase());
+    }
+
     function normalize(row, index) {
+      const orderRaw = getValue(row, ["Порядок", "Order", "Сортування"]).replace(",", ".");
+      const order = orderRaw !== "" && !Number.isNaN(Number(orderRaw)) ? Number(orderRaw) : index + 1;
+
       return {
         category: getValue(row, ["Категорія", "Category", "Розділ"]) || "Інше",
         name: getValue(row, ["Назва", "Name", "Позиція"]),
         description: getValue(row, ["Опис", "Description", "Склад"]),
-        weight: getValue(row, ["Вага", "Об'єм", "Обєм", "Weight", "Volume"]),
+        weight: getValue(row, ["Вага", "Об'єм", "Обʼєм", "Обєм", "Weight", "Volume"]),
         price: formatPrice(getValue(row, ["Ціна", "Price", "Вартість"])),
         photo: getValue(row, ["Фото", "Photo", "Image", "Зображення"]),
-        status: getValue(row, ["Статус", "Status", "Активно"]).toLowerCase(),
+        hidden: isFalse(getValue(row, ["Статус", "Status", "Активно"])),
         badgeText: getBadgeText(row),
-        order: Number(String(getValue(row, ["Порядок", "Order", "Сортування"])).replace(",", ".")) || index + 1,
+        order,
         showPhoto: getPhotoVisibility(row)
       };
     }
 
     function getBadgeText(row) {
       const directBadge = getValue(row, ["Позначка", "Бейдж", "Мітка", "Label", "Badge"]);
-      if (directBadge) return directBadge;
+      if (directBadge && !isFalse(directBadge)) return directBadge;
 
       const popular = getValue(row, ["Популярне", "Popular", "Хіт"]);
-      if (!popular) return "";
-
-      const normalized = popular.toLowerCase();
-      if (["ні", "нет", "no", "false", "0", "hidden", "inactive", "вимкнено", "off"].includes(normalized)) return "";
-      if (["так", "yes", "1", "true", "+"].includes(normalized)) return "Хіт";
+      if (!popular || isFalse(popular)) return "";
+      if (TRUE_VALUES.includes(popular.toLowerCase())) return "Хіт";
       return popular;
     }
 
     function getPhotoVisibility(row) {
       const value = getValue(row, [PHOTO_VISIBILITY_COLUMN, "Фото показувати", "Показувати", "Show photo", "ShowPhoto"]);
-      if (!value) return true;
-      return !["ні", "нет", "no", "false", "0", "hidden", "inactive", "вимкнено", "off"].includes(value.toLowerCase());
+      return !value || !isFalse(value);
     }
 
     function getPageBackground(rows) {
@@ -610,22 +692,29 @@
     }
 
     function applyPageBackground(url) {
-      const imageUrl = getImageUrl(url);
+      const imageUrl = getImageUrl(url, 1600);
       if (!imageUrl) {
         document.documentElement.style.setProperty("--page-bg-image", "none");
         return;
       }
-
-      document.documentElement.style.setProperty("--page-bg-image", `url("${imageUrl.replaceAll('"', "%22")}")`);
+      // фон показується лише після повного завантаження — без "стрибка"
+      const img = new Image();
+      img.onload = () => {
+        document.documentElement.style.setProperty("--page-bg-image", `url("${imageUrl.replaceAll('"', "%22")}")`);
+      };
+      img.src = imageUrl;
     }
 
-    function getImageUrl(url) {
+    function getImageUrl(url, size = 800) {
       const raw = String(url || "").trim();
       if (!raw) return "";
 
-      const driveMatch = raw.match(/drive\.google\.com\/file\/d\/([^/]+)/) || raw.match(/[?&]id=([^&]+)/);
+      const driveMatch =
+        raw.match(/drive\.google\.com\/file\/d\/([^/?#]+)/) ||
+        (/drive\.google\.com|docs\.google\.com/.test(raw) && raw.match(/[?&]id=([^&#]+)/));
+
       if (driveMatch && driveMatch[1]) {
-        return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
+        return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w${size}`;
       }
 
       return raw;
@@ -635,61 +724,73 @@
       const raw = String(value || "").trim();
       if (!raw) return "";
       if (/грн|₴|uah/i.test(raw)) return raw;
-      return raw + " грн";
+
+      // "1200" → "1 200 грн", "85,5" → "85,5 грн"; текст ("за запитом") лишається як є
+      const numeric = raw.replace(/\s/g, "").replace(",", ".");
+      if (/^\d+(\.\d+)?$/.test(numeric)) {
+        return Number(numeric).toLocaleString("uk-UA", { maximumFractionDigits: 2 }) + " грн";
+      }
+      return /\d/.test(raw) ? raw + " грн" : raw;
     }
 
-    async function loadMenu() {
-      try {
-        setStatus("Завантаження меню...");
-        els.menuRoot.innerHTML = "";
+    /* ================= ГОЛОВНА ЛОГІКА ================= */
+    function applyRows(rows, { fromCache = false, savedAt = Date.now() } = {}) {
+      applyPageBackground(getPageBackground(rows));
 
+      state.items = rows
+        .map(normalize)
+        .filter(item => item.name && !item.hidden)
+        .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, "uk"));
+
+      state.categories = getCategoriesFromRows(state.items);
+      if (!state.categories.includes(state.activeCategory)) state.activeCategory = "Усе";
+      state.updatedAt = new Date(savedAt);
+      state.fromCache = fromCache;
+
+      render();
+    }
+
+    async function loadMenu({ silent = false } = {}) {
+      if (state.loading) return;
+      state.loading = true;
+
+      const hasData = state.items.length > 0;
+      if (!hasData && !silent) renderSkeleton();
+
+      try {
         const data = await loadGoogleSheet();
         const rows = tableToRows(data.table);
-        applyPageBackground(getPageBackground(rows));
-
-        const items = rows
-          .map(normalize)
-          .filter(item => item.name)
-          .filter(item => !["ні", "нет", "no", "false", "0", "hidden", "inactive", "вимкнено"].includes(item.status))
-          .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name, "uk"));
-
-        state.items = items;
-        state.categories = getCategoriesFromRows(items);
-        state.activeCategory = state.categories.includes(state.activeCategory) ? state.activeCategory : "Усе";
-        state.updatedAt = new Date();
-
-        render();
+        writeCache(rows);
+        applyRows(rows);
       } catch (error) {
         console.error(error);
-        setStatus("Не вдалося завантажити меню.");
-        els.menuRoot.innerHTML = `
-          <div class="error-box">
-            <strong>Меню не завантажилось.</strong><br>
-            Перевір доступ до таблиці і назви колонок.
-          </div>
-        `;
+        if (hasData) {
+          // є збережене меню — показуємо його й тихо позначаємо в статусі
+          state.fromCache = true;
+          renderStatus();
+        } else {
+          renderError();
+        }
+      } finally {
+        state.loading = false;
       }
     }
 
     function getCategoriesFromRows(items) {
       const categories = [];
       items.forEach(item => {
-        const category = String(item.category || "Інше").trim();
-        if (category && !categories.includes(category)) categories.push(category);
+        if (!categories.includes(item.category)) categories.push(item.category);
       });
       return ["Усе", ...categories];
     }
 
-    function setStatus(text) {
-      els.status.innerHTML = `<span>${escapeHTML(text)}</span>`;
-    }
-
     function applyFilters() {
-      state.filtered = state.items.filter(item => {
-        return state.activeCategory === "Усе" || item.category === state.activeCategory;
-      });
+      state.filtered = state.activeCategory === "Усе"
+        ? state.items
+        : state.items.filter(item => item.category === state.activeCategory);
     }
 
+    /* ================= РЕНДЕР ================= */
     function render() {
       applyFilters();
       renderTabs();
@@ -698,11 +799,23 @@
     }
 
     function renderTabs() {
-      els.tabs.innerHTML = state.categories.map(category => `
-        <button class="tab ${category === state.activeCategory ? "active" : ""}" type="button" data-category="${escapeAttr(category)}">
-          ${escapeHTML(category)}
-        </button>
-      `).join("");
+      const counts = state.items.reduce((acc, item) => {
+        acc[item.category] = (acc[item.category] || 0) + 1;
+        return acc;
+      }, {});
+
+      els.tabs.innerHTML = state.categories.map(category => {
+        const active = category === state.activeCategory;
+        const count = category === "Усе" ? state.items.length : counts[category];
+        return `
+          <button class="tab ${active ? "active" : ""}" type="button"
+                  data-category="${escapeAttr(category)}" aria-pressed="${active}">
+            ${escapeHTML(category)}<span class="tab-count">${count}</span>
+          </button>
+        `;
+      }).join("");
+
+      requestAnimationFrame(updateScrollButtons);
     }
 
     function renderStatus() {
@@ -712,13 +825,15 @@
 
       els.status.innerHTML = `
         <span><strong>${state.filtered.length}</strong> з ${state.items.length} позицій</span>
-        <span>Оновлено: ${time}</span>
+        <span>${state.fromCache
+          ? `<span class="offline">Збережена версія</span> · ${time}`
+          : `Оновлено: ${time}`}</span>
       `;
     }
 
     function renderMenu() {
       if (!state.filtered.length) {
-        els.menuRoot.innerHTML = `<div class="empty">Нічого не знайдено.</div>`;
+        els.menuRoot.innerHTML = `<div class="empty">У цій категорії поки немає позицій.</div>`;
         return;
       }
 
@@ -730,18 +845,21 @@
             <h2 class="category-title">${escapeHTML(category)}</h2>
           </div>
           <div class="grid">
-            ${items.map(renderItem).join("")}
+            ${items.map((item, i) => renderItem(item, i)).join("")}
           </div>
         </section>
       `).join("");
     }
 
-    function renderItem(item) {
-      const categoryAllowsPhoto = !NO_PHOTO_CATEGORIES.includes(String(item.category || "").trim().toLowerCase());
+    function renderItem(item, index) {
+      const categoryAllowsPhoto = !NO_PHOTO_CATEGORIES.includes(item.category.toLowerCase());
       const showPhoto = categoryAllowsPhoto && item.showPhoto;
       const topMark = item.badgeText
         ? `<div class="badge">${escapeHTML(item.badgeText)}</div>`
-        : `<div class="dots"><i></i><i></i><i></i></div>`;
+        : `<div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>`;
+
+      // перші 2 фото вантажимо одразу, решту — коли гість до них догорне
+      const loading = index < 2 ? "eager" : "lazy";
 
       return `
         <article class="item ${showPhoto ? "" : "no-photo"}">
@@ -749,29 +867,58 @@
 
           ${showPhoto ? `
             <div class="photo-wrap">
-              ${item.photo
-                ? `<img src="${escapeAttr(getImageUrl(item.photo))}" alt="${escapeAttr(item.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;photo-placeholder&quot;>Фото<br>страви</div>'">`
-                : `<div class="photo-placeholder">Фото<br>страви</div>`
-              }
+              <div class="photo-placeholder">Фото<br>страви</div>
+              ${item.photo ? `
+                <img src="${escapeAttr(getImageUrl(item.photo))}" alt="${escapeAttr(item.name)}"
+                     loading="${loading}" decoding="async" width="500" height="500">
+              ` : ""}
             </div>
           ` : ""}
 
           <div class="item-content">
             <h3 class="item-title">${escapeHTML(item.name)}</h3>
             ${item.description ? `<p class="item-desc">${escapeHTML(item.description)}</p>` : ""}
-            <div class="meta">
-              ${item.weight ? `<span class="weight">${escapeHTML(item.weight)}</span>` : ""}
-              ${item.price ? `<span class="price">${escapeHTML(item.price)}</span>` : ""}
-            </div>
+            ${item.weight || item.price ? `
+              <div class="meta">
+                ${item.weight ? `<span class="weight">${escapeHTML(item.weight)}</span>` : ""}
+                ${item.price ? `<span class="price">${escapeHTML(item.price)}</span>` : ""}
+              </div>
+            ` : ""}
           </div>
         </article>
       `;
     }
 
+    function renderSkeleton() {
+      els.status.innerHTML = `<span>Завантаження меню...</span>`;
+      const card = `
+        <article class="item skeleton" aria-hidden="true">
+          <div class="sk sk-circle"></div>
+          <div class="item-content">
+            <div class="sk sk-line title"></div>
+            <div class="sk sk-line"></div>
+            <div class="sk sk-line" style="width:80%"></div>
+            <div class="sk sk-line short"></div>
+          </div>
+        </article>`;
+      els.menuRoot.innerHTML = `<div class="grid" style="margin-top:26px">${card}${card}</div>`;
+    }
+
+    function renderError() {
+      els.status.innerHTML = `<span>Не вдалося завантажити меню.</span>`;
+      els.menuRoot.innerHTML = `
+        <div class="error-box">
+          <strong>Меню не завантажилось.</strong><br>
+          Перевірте інтернет-з'єднання та спробуйте ще раз.
+          <br><button class="retry-btn" id="retryBtn" type="button">Спробувати ще раз</button>
+        </div>
+      `;
+    }
+
+    /* ================= ДОПОМІЖНІ ================= */
     function groupByCategory(items) {
       return items.reduce((acc, item) => {
-        if (!acc[item.category]) acc[item.category] = [];
-        acc[item.category].push(item);
+        (acc[item.category] ||= []).push(item);
         return acc;
       }, {});
     }
@@ -797,16 +944,30 @@
       return escapeHTML(value).replaceAll("`", "&#096;");
     }
 
+    function updateScrollButtons() {
+      const t = els.tabs;
+      const overflow = t.scrollWidth > t.clientWidth + 2;
+      els.categoryScroll.classList.toggle("no-overflow", !overflow);
+      if (!overflow) return;
+      els.catLeft.disabled = t.scrollLeft <= 2;
+      els.catRight.disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 2;
+    }
+
+    /* ================= ПОДІЇ ================= */
     els.tabs.addEventListener("click", event => {
       const button = event.target.closest(".tab");
       if (!button) return;
       state.activeCategory = button.dataset.category;
       render();
-      button.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-      window.scrollTo({
-        top: document.querySelector(".toolbar-wrap").offsetTop,
-        behavior: "smooth"
-      });
+
+      const activeTab = els.tabs.querySelector(".tab.active");
+      activeTab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+
+      // прокручуємо до початку списку, лише якщо гість уже нижче
+      const menuTop = els.menuRoot.getBoundingClientRect().top + window.scrollY - els.toolbar.offsetHeight - 40;
+      if (window.scrollY > menuTop) {
+        window.scrollTo({ top: Math.max(0, menuTop), behavior: "smooth" });
+      }
     });
 
     els.tabs.addEventListener("wheel", event => {
@@ -816,22 +977,54 @@
       }
     }, { passive: false });
 
-    els.catLeft.addEventListener("click", () => {
-      els.tabs.scrollBy({ left: -260, behavior: "smooth" });
-    });
+    els.tabs.addEventListener("scroll", () => requestAnimationFrame(updateScrollButtons), { passive: true });
+    window.addEventListener("resize", () => requestAnimationFrame(updateScrollButtons), { passive: true });
 
-    els.catRight.addEventListener("click", () => {
-      els.tabs.scrollBy({ left: 260, behavior: "smooth" });
-    });
+    els.catLeft.addEventListener("click", () => els.tabs.scrollBy({ left: -260, behavior: "smooth" }));
+    els.catRight.addEventListener("click", () => els.tabs.scrollBy({ left: 260, behavior: "smooth" }));
 
-    els.topBtn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    els.topBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+    let scrollTicking = false;
     window.addEventListener("scroll", () => {
-      els.topBtn.classList.toggle("visible", window.scrollY > 420);
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        els.topBtn.classList.toggle("visible", window.scrollY > 420);
+        scrollTicking = false;
+      });
+    }, { passive: true });
+
+    // Плавна поява фото та заглушка при помилці (події load/error не спливають — ловимо в capture)
+    els.menuRoot.addEventListener("load", event => {
+      if (event.target.tagName === "IMG") event.target.classList.add("loaded");
+    }, true);
+
+    els.menuRoot.addEventListener("error", event => {
+      if (event.target.tagName === "IMG") event.target.remove();
+    }, true);
+
+    els.menuRoot.addEventListener("click", event => {
+      if (event.target.id === "retryBtn") loadMenu();
     });
 
+    // Якщо гість повернувся до вкладки — тихо оновлюємо меню
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible" || !state.updatedAt) return;
+      if (Date.now() - state.updatedAt.getTime() > AUTO_REFRESH_MS || state.fromCache) {
+        loadMenu({ silent: true });
+      }
+    });
+
+    window.addEventListener("online", () => {
+      if (state.fromCache || !state.items.length) loadMenu({ silent: true });
+    });
+
+    /* ================= СТАРТ ================= */
+    const cached = readCache();
+    if (cached) {
+      applyRows(cached.rows, { fromCache: true, savedAt: cached.savedAt });
+    }
     loadMenu();
   </script>
 </body>
